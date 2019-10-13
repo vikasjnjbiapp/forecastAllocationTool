@@ -187,11 +187,11 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
-                            <?php if(!empty($tempTalDataEntry[$i-1])) { echo"Hi";?>
+                            <?php if(!empty($tempTalDataEntry[$i-1])) { ?>
                             <level class="form-control"><?php echo $brandOne[$tempTalDataEntry[$i-1]['brandId']];?></level>
                             <input type="hidden" class="form-control" name="brand_<?php echo $i;?>" id="brand_<?php echo $i;?>" value="<?php echo $tempTalDataEntry[$i-1]['brandId'];?>" readonly>
-                            <?php } else { echo "Hi2";?>
-                            <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brandN_<?php echo $i;?>" value="<?php echo $brandOne[$brandOneNew[$key]];?>" readonly>
+                            <?php } else { ?>
+                            <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brand_<?php echo $i;?>" value="<?php echo $brandOne[$brandOneNew[$key]];?>" readonly>
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
@@ -199,7 +199,7 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             <level class="form-control"><?php echo $itemOne[$tempTalDataEntry[$i-1]['itemId']];?></level>
                             <input type="hidden" class="form-control" name="item_<?php echo $i;?>" id="item_<?php echo $i;?>" value="<?php echo $tempTalDataEntry[$i-1]['itemId']; ?>" readonly>
                             <?php } else { ?>
-                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="itemN_<?php echo $i;?>" value="<?php echo $itemOne[$key]; ?>" readonly>
+                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="item_<?php echo $i;?>" value="<?php echo $itemOne[$key]; ?>" readonly>
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
@@ -436,48 +436,73 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
             $previousMonth = date('m')-1;
             $fieldTALNameNextYear = '*';
             $conditionTALNextYear = ' customerWWID='.$_SESSION['customerName'].' AND year='.$dateVal[1];
-            $talDataFromActualN = $specificMethod->fetchActualSalesRecordsByDateTime('jnj_actualsalesvalue', $fieldTALName, $dateVal[1], $conditionTALNextYear);
-            if (!empty($talDataFromActualN)){
+            $talDataFromActualN = $specificMethod->fetchActualSalesRecordsByDateTime('jnj_actualsalesvalue', $fieldTALNameNextYear, $dateVal[1], $conditionTALNextYear);
+            $talTempDataN = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear, $dateVal[1], $conditionTALNextYear);
+            if (!empty($talDataFromActualN) && empty($talTempData)){
                 $tempTalDataEntryNextYear = $talDataFromActualN;
-                $style = 'background:green; color: #fff;';
                 $readonly = 'readonly';
             } else {
-                $tempTalDataEntryNextYear = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear, $dateVal[1], $conditionTALNextYear);
+                $tempTalDataEntryNextYear = $talTempDataN;
+                $readonly = 'readonly';
             }
             $targetSalesN = $specificMethod->fetchTargetSales('jnj_totalSalesTarget', 'fftarget', $dateVal[1]);
             $lastRollingForecastN = $specificMethod->fetchLastRollingForecast('jnj_totalrollingforecast', 'rollingForecast', $dateVal[1], $previousMonth);
         ?>
-        <div class="table-responsive">
+        <div class="table-responsive" style="height:550px;">
         <form id="entryGridFormNextYear" name="entryGridFormNextYear" method="post">
             <table class="table table-striped" id="nextSampleTbl">
                 <thead>
                     <tr class="table-dark">
-                        <th colspan="20"></th>
+                        <th colspan="4" class="small">		                
+                            <div class="btn-group dropright">		
+                              <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="valueFromNFGSystem">Statical Forecast volume</button>		
+                              <div class="dropdown-menu" style="position:fixed;">		
+                                <a class="dropdown-item" href="#" >HGNC:1</a>		
+                                <a class="dropdown-item" href="#">HGNC:2</a>		
+                                <a class="dropdown-item" href="#">HGNC:3</a>		
+                                <a class="dropdown-item" href="#">HGNC:4</a>		
+                                <a class="dropdown-item" href="#">HGNC:5</a>		
+                                <a class="dropdown-item" href="#">HGNC:6</a>		
+                                <a class="dropdown-item" href="#">HGNC:7</a>		
+                                <a class="dropdown-item" href="#">HGNC:8</a>		
+                                <a class="dropdown-item" href="#">HGNC:9</a>  		
+                              </div>		
+                            </div>		
+                        </th>
+                        <th colspan="3">
+                            <div class="btn-group dropright">
+                                <form class="form-inline">
+                                   <input class="form-control mr-sm-2" type="search" placeholder="Search by brand" aria-label="Search" style="width:180px;">
+                                   <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                                </form>
+                            </div>
+                        </th>
+                        <th colspan="13"><div id="errorMessage"></div></th>
                         <th colspan="2" style="text-align: center; color: black;"><div class="small"><strong>Auto Populated</strong></div></th>
                         <th colspan="4" style="text-align: center; color: black;"><div class="small"><strong>Calculated Field</strong></div></th>
                         <th><div class="small col-12" style='width: 150px; color: black;'><strong>Only CVTL</strong></div></th>
                     </tr>
                     <tr class="table-primary">
-                        <th><div class="small col-4" style='width: 10px;'>&nbsp;</div></th>
+                        <th><div class="small col-4" style='width: 2px;'>&nbsp;</div></th>
                         <th><div class="small col-8" style='width: 60px;'>Country</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Type</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Type</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Bus Selector</div></th>                        
-                        <th><div class="small col-12" style='width: 150px;'>Brand</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Item(SKU)</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Vaue_Category</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jan</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Feb</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Mar</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Apr</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>May</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jun</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jul</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Aug</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Sep</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Oct</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Nov</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Dec</div></th>
-                        <th><div class="small col-4" style='width: 50px;'>&nbsp;</div></th>
+                        <th><div class="small col-12" style='width: 130px;'>Brand</div></th>
+                        <th><div class="small col-12" style='width: 170px;'>Item(SKU)</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Forecast/FOCs</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jan</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Feb</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Mar</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Apr</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>May</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jun</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jul</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Aug</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Sep</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Oct</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Nov</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Dec</div></th>
+                        <th><div class="small col-4" style='width: 2px;'>&nbsp;</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Total Sales Target</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Last Rolling Forecast</div></th>
                         <th><div class="small col-12" style='width: 150px;'>Current Rolling Forecast</div></th>
@@ -492,6 +517,10 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                      $i = 0;
                      foreach($itemOne as $key => $val) {
                         $i = $i + 1;
+                        $arrUpsideVal = ['upSidevalue', 'monthValue', 'itemId'];
+                        $arrDownsideVal = ['downSidevalue', 'monthValue', 'itemId'];
+                        $upsideN = $specificMethod->fetchUpsideVolume('jnj_upsidetable', $arrUpsideVal, $_SESSION['customerName'], $key, $dateVal[1]);
+                        $downsideN = $specificMethod->fetchDownsideVolume('jnj_downsidetable', $arrDownsideVal, $_SESSION['customerName'], $key, $dateVal[1]);
                   ?>
                     <tr>
                         <td><div class="input-group input-group-sm mt-2">                
@@ -505,7 +534,7 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             <input type="text" class="form-control" name="type_<?php echo $i;?>" id="typeN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear[$i-1]['type'];?>" readonly>
                             <?php } else { ?>
                             <select class="form-control form-control-inline" name="type_<?php echo $i;?>" id="typeN_<?php echo $i;?>">
-                                <option value='NA'>Select Type</option>
+                                <option value='0'>Select Type</option>
                                 <option value="Private" selected>Private</option>
                                 <option value="Institution">Institution</option>
                                 <option value="MOH">MOH</option>
@@ -525,14 +554,16 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
                             <?php if(!empty($tempTalDataEntryNextYear[$i-1])) { ?>
-                            <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brandN_<?php echo $i;?>" value="<?php echo $brandOne[$tempTalDataEntryNextYear[$i-1]['brandId']];?>" readonly>
+                            <level class="form-control"><?php echo $brandOne[$tempTalDataEntryNextYear[$i-1]['brandId']];?></level>
+                            <input type="hidden" class="form-control" name="brand_<?php echo $i;?>" id="brandN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear[$i-1]['brandId'];?>" readonly>
                             <?php } else { ?>
                             <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brandN_<?php echo $i;?>" value="<?php echo $brandOne[$brandOneNew[$key]];?>" readonly>
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
                             <?php if(!empty($tempTalDataEntryNextYear[$i-1])) { ?>
-                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="itemN_<?php echo $i;?>" value="<?php echo $itemOne[$tempTalDataEntryNextYear[$i-1]['itemId']]; ?>" readonly>
+                            <level class="form-control"><?php echo $itemOne[$tempTalDataEntryNextYear[$i-1]['itemId']];?></level>
+                            <input type="hidden" class="form-control" name="item_<?php echo $i;?>" id="itemN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear[$i-1]['itemId'];?>" readonly>
                             <?php } else { ?>
                             <input type="text" class="form-control" name="item_<?php echo $i;?>" id="itemN_<?php echo $i;?>" value="<?php echo $itemOne[$key]; ?>" readonly>
                             <?php } ?>
@@ -541,42 +572,123 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                           <lavel class="form-control"><?php echo strtoupper('forecast');?></lavel>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear[$i-1]['jan_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear[$i-1]['jan_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['jan_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['jan_fcast']) && date('m')-1 > 1)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <span class="dropdown-item" id="jan_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                                <span class="dropdown-item" id="jan_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                                <div class="dropdown-divider"></div>		
+                                <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="jan_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                         </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][1])?$upsideN[$key][1]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][1])?$downsideN[$key][1]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['feb_fcast'])?$tempTalDataEntryNextYear[$i-1]['feb_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['feb_fcas'])?$tempTalDataEntryNextYear[$i-1]['feb_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['feb_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['feb_fcast'])&& date('m')-1 >= 2)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="feb_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="feb_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="feb_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][2])?$upsideN[$key][2]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][2])?$downsideN[$key][2]:0;?></span></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['mar_fcast'])?$tempTalDataEntryNextYear[$i-1]['mar_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['mar_fcas'])?$tempTalDataEntryNextYear[$i-1]['mar_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['mar_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['mar_fcast'])&& date('m')-1 >= 3)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="mar_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="mar_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="mar_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][3])?$upsideN[$key][3]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][3])?$downsideN[$key][3]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['apr_fcast'])?$tempTalDataEntryNextYear[$i-1]['apr_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['apr_fcas'])?$tempTalDataEntryNextYear[$i-1]['apr_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['apr_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['apr_fcast'])&& date('m')-1 >= 4)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <span class="dropdown-item" id="apr_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                                <span class="dropdown-item" id="apr_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                                <div class="dropdown-divider"></div>		
+                                <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="apr_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][4])?$upsideN[$key][4]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][4])?$downsideN[$key][4]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['may_fcast'])?$tempTalDataEntryNextYear[$i-1]['may_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['may_fcas'])?$tempTalDataEntryNextYear[$i-1]['may_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['may_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['may_fcast'])&& date('m')-1 >= 5)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="may_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="may_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="may_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][5])?$upsideN[$key][5]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][5])?$downsideN[$key][5]:0;?></span></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['jun_fcast'])?$tempTalDataEntryNextYear[$i-1]['jun_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['jun_fcas'])?$tempTalDataEntryNextYear[$i-1]['jun_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['jun_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['jun_fcast'])&& date('m')-1 >= 6)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="jun_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="jun_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="jun_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][6])?$upsideN[$key][6]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][6])?$downsideN[$key][6]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['jul_fcast'])?$tempTalDataEntryNextYear[$i-1]['jul_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['jul_fcas'])?$tempTalDataEntryNextYear[$i-1]['jul_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['jul_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['jul_fcast'])&& date('m')-1 >= 7)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="jul_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="jul_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="jul_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][7])?$upsideN[$key][7]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][7])?$downsideN[$key][7]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['aug_fcast'])?$tempTalDataEntryNextYear[$i-1]['aug_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['aug_fcas'])?$tempTalDataEntryNextYear[$i-1]['aug_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['aug_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['aug_fcast'])&& date('m')-1 >= 8)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="aug_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="aug_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="aug_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][8])?$upsideN[$key][8]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][8])?$downsideN[$key][8]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['sep_fcast'])?$tempTalDataEntryNextYear[$i-1]['sep_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['sep_fcas'])?$tempTalDataEntryNextYear[$i-1]['sep_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['sep_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['sep_fcast'])&& date('m')-1 >= 9)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="sep_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="sep_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="sep_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][9])?$upsideN[$key][9]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downside[$key][9])?$downside[$key][9]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['oct_fcast'])?$tempTalDataEntryNextYear[$i-1]['oct_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['oct_fcas'])?$tempTalDataEntryNextYear[$i-1]['oct_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['oct_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['oct_fcast'])&& date('m')-1 >= 10)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="oct_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="oct_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="oct_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][10])?$upsideN[$key][10]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][10])?$downsideN[$key][10]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['nov_fcast'])?$tempTalDataEntryNextYear[$i-1]['nov_fcast']:0;?>" maxlength="8">
-                        </div></td>
+                            <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['nov_fcas'])?$tempTalDataEntryNextYear[$i-1]['nov_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['nov_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['nov_fcast'])&& date('m')-1 >= 11)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="nov_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="nov_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="nov_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][11])?$upsideN[$key][11]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][11])?$downsideN[$key][11]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['dec_fcast'])?$tempTalDataEntryNextYear[$i-1]['dec_fcast']:0;?>" maxlength="8">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
+                            <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['dec_fcas'])?$tempTalDataEntryNextYear[$i-1]['dec_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear[$i-1]['dec_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear[$i-1]['dec_fcast'])&& date('m')-1 >= 12)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="dec_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="dec_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="dec_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideN[$key][12])?$upsideN[$key][12]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideN[$key][12])?$downsideN[$key][12]:0;?></span></td>
+                         <td><div class="input-group input-group-sm mt-2">                
                             &nbsp;
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
@@ -604,7 +716,7 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                     <tr>
                         <td colspan="6"></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                          <level class="form-control"><?php echo strtoupper('focs');?></level>
+                          <lable class="form-control"><?php echo strtoupper('focs');?></lable>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             <input type="text" class="form-control" name="jan_focs_<?php echo $i;?>" id="jan_focsN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear[$i-1]['jan_focs'])?$tempTalDataEntryNextYear[$i-1]['jan_focs']:0;?>" maxlength="8">
@@ -700,55 +812,80 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
         <?php
             $previousMonth = date('m')-1;
             $fieldTALNameNextYear2 = '*';
-            $conditionTALNextYear2 = ' customerName='.$_SESSION['customerName'].' AND year='.$dateVal[2];
-            $talDataFromActualNN = $specificMethod->fetchActualSalesRecordsByDateTime('jnj_actualsalesvalue', $fieldTALName, $dateVal[2], $conditionTAL);
-            if (!empty($talDataFromActualNN)){
+            $conditionTALNextYear2 = ' customerWWID='.$_SESSION['customerName'].' AND year='.$dateVal[2];
+            $talDataFromActualNN = $specificMethod->fetchActualSalesRecordsByDateTime('jnj_actualsalesvalue', $fieldTALNameNextYear2, $dateVal[2], $conditionTALNextYear2);
+            $talTempDataNN = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear2, $dateVal[2], $conditionTALNextYear2);
+            if (!empty($talDataFromActualNN)&& empty($talTempDataNN)){
                 $tempTalDataEntryNextYear2 = $talDataFromActualNN;
-                $style = 'background:green; color: #fff;';
                 $readonly = 'readonly';
             } else {
-                $tempTalDataEntryNextYear2 = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear2, $dateVal[2], $conditionTALNextYear2);
+                $tempTalDataEntryNextYear2 = $talTempDataNN;
+                $readonly = 'readonly';
             }
-            $targetSales = $specificMethod->fetchTargetSales('jnj_totalSalesTarget', 'fftarget', $dateVal[2]);
-            $lastRollingForecast = $specificMethod->fetchLastRollingForecast('jnj_totalrollingforecast', 'rollingForecast', $dateVal[2], $previousMonth);
+            $targetSalesNN = $specificMethod->fetchTargetSales('jnj_totalSalesTarget', 'fftarget', $dateVal[2]);
+            $lastRollingForecastNN = $specificMethod->fetchLastRollingForecast('jnj_totalrollingforecast', 'rollingForecast', $dateVal[2], $previousMonth);
         ?>
-        <div class="table-responsive">
+        <div class="table-responsive" style="height:550px;">
         <form id="entryGridFormOneNextYear" name="entryGridFormOneNextYear" method="post">
             <table class="table table-striped" id="nextOneSampleTbl">
                 <thead>
                     <tr class="table-dark">
-                        <th colspan="20"></th>
+                        <th colspan="4" class="small">
+                        <div class="btn-group dropright">				
+                              <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="valueFromNFGSystem">Statical Forecast volume</button>				
+                              <div class="dropdown-menu" style="position:fixed;">				
+                                <a class="dropdown-item" href="#" >HGNC:1</a>				
+                                <a class="dropdown-item" href="#">HGNC:2</a>				
+                                <a class="dropdown-item" href="#">HGNC:3</a>				
+                                <a class="dropdown-item" href="#">HGNC:4</a>				
+                                <a class="dropdown-item" href="#">HGNC:5</a>				
+                                <a class="dropdown-item" href="#">HGNC:6</a>				
+                                <a class="dropdown-item" href="#">HGNC:7</a>				
+                                <a class="dropdown-item" href="#">HGNC:8</a>				
+                                <a class="dropdown-item" href="#">HGNC:9</a>  				
+                              </div>				
+                            </div>				
+                        </th>
+                        <th colspan="3">
+                            <div class="btn-group dropright">
+                                <form class="form-inline">
+                                   <input class="form-control mr-sm-2" type="search" placeholder="Search by brand" aria-label="Search" style="width:180px;">
+                                   <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                                </form>
+                            </div>
+                        </th>
+                        <th colspan="13"><div id="errorMessage"></div></th>
                         <th colspan="2" style="text-align: center; color: black;"><div class="small"><strong>Auto Populated</strong></div></th>
                         <th colspan="4" style="text-align: center; color: black;"><div class="small"><strong>Calculated Field</strong></div></th>
                         <th><div class="small col-12" style='width: 150px; color: black;'><strong>Only CVTL</strong></div></th>
                     </tr>
                     <tr class="table-primary">
-                        <th><div class="small col-4" style='width: 10px;'>&nbsp;</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Country</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Type</div></th>
+                        <th><div class="small col-4" style='width: 2px;'>&nbsp;</div></th>
+                        <th><div class="small col-12" style='width: 60px;'>Country</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Type</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Bus Selector</div></th>                        
-                        <th><div class="small col-12" style='width: 150px;'>Brand</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Item(SKU)</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Vaue_Category</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jan</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Feb</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Mar</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Apr</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>May</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jun</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jul</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Aug</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Sep</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Oct</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Nov</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Dec</div></th>
-                        <th><div class="small col-4" style='width: 50px;'> &nbsp;</div></th>
+                        <th><div class="small col-12" style='width: 130px;'>Brand</div></th>
+                        <th><div class="small col-12" style='width: 170px;'>Item(SKU)</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Forecast/FOCs</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jan</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Feb</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Mar</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Apr</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>May</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jun</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jul</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Aug</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Sep</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Oct</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Nov</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Dec</div></th>
+                        <th><div class="small col-4" style='width: 2px;'> &nbsp;</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Total Sales Target</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Last Rolling Forecast</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Total Forecast (in Current year)</div></th>
+                        <th><div class="small col-12" style='width: 150px;'>Current Rolling Forecast</div></th>
                         <th><div class="small col-8" style='width: 80px;'>Variance</div></th>
                         <th><div class="small col-8" style='width: 80px;'>YTD</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Year to go</div></th>
+                        <th><div class="small col-12" style='width: 100px;'>Business to Go</div></th>
                         <th><div class="small col-12" style='width: 130px;'>Financial Plan (visible for CVTL)</div></th>
                     </tr>
                 </thead>
@@ -756,11 +893,15 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                   <?php
                     $i = 0;
                      foreach($itemOne as $key => $val) {
-                        $i = $i + 1;  
+                        $i = $i + 1;
+                        $arrUpsideValNN = ['upSidevalue', 'monthValue', 'itemId'];
+                        $arrDownsideValNN = ['downSidevalue', 'monthValue', 'itemId'];
+                        $upsideNN = $specificMethod->fetchUpsideVolume('jnj_upsidetable', $arrUpsideValNN, $_SESSION['customerName'], $key, $dateVal[2]);
+                        $downsideNN = $specificMethod->fetchDownsideVolume('jnj_downsidetable', $arrDownsideValNN, $_SESSION['customerName'], $key, $dateVal[2]); 
                   ?>
                     <tr>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="hidden" class="form-control" name="customerName_<?php echo $i;?>" id="customerNameNN_<?php echo $i;?>" value="<?php echo $customerNameOne['customerName'];?>" readonly>
+                            <input type="hidden" class="form-control" name="customerName_<?php echo $i;?>" id="customerNameNN_<?php echo $i;?>" value="<?php echo $_SESSION['customerName'];?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             <input type="text" class="form-control" name="country_<?php echo $i;?>" id="countryNN_<?php echo $i;?>" value="<?php echo $country['countryCode'];?>" readonly>
@@ -790,57 +931,140 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
                             <?php if(!empty($tempTalDataEntryNextYear2[$i-1])) { ?>
-                            <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brandNN_<?php echo $i;?>" value="<?php echo $brandOne[$tempTalDataEntryNextYear2[$i-1]['brandId']];?>" readonly>
+                            <lable class="form-control"><?php echo $brandOne[$tempTalDataEntryNextYear2[$i-1]['brandId']];?></lable>
+                            <input type="hidden" class="form-control" name="brand_<?php echo $i;?>" id="brandNN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear2[$i-1]['brandId'];?>" readonly>
                             <?php } else { ?>
                             <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brandNN_<?php echo $i;?>" value="<?php echo $brandOne[$brandOneNew[$key]];?>" readonly>
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
                             <?php if(!empty($tempTalDataEntryNextYear2[$i-1])) { ?>
-                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="itemNN_<?php echo $i;?>" value="<?php echo $itemOne[$tempTalDataEntryNextYear2[$i-1]['itemId']]; ?>" readonly>
+                            <lable class="form-control"><?php echo $itemOne[$tempTalDataEntryNextYear2[$i-1]['itemId']];?></lable>
+                            <input type="hidden" class="form-control" name="item_<?php echo $i;?>" id="itemNN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear2[$i-1]['itemId']; ?>" readonly>
                             <?php } else { ?>
-                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="itemNN_<?php echo $i;?>" value="<?php echo $itemOne[$key]; ?>" readonly>
+                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="item_<?php echo $i;?>" value="<?php echo $itemOne[$key]; ?>" readonly>
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                          <lavel class="form-control"><?php echo strtoupper('forecast');?></lavel>
+                          <lable class="form-control"><?php echo strtoupper('forecast');?></lable>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear2[$i-1]['jan_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear2[$i-1]['jan_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['jan_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['jan_fcast']) && date('m')-1 > 1)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="jan_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="jan_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="jan_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][1])?$upsideNN[$key][1]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][1])?$downsideNN[$key][1]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['feb_fcast'])?$tempTalDataEntryNextYear2[$i-1]['feb_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['feb_fcas'])?$tempTalDataEntryNextYear2[$i-1]['feb_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['feb_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['feb_fcast'])&& date('m')-1 >= 2)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="feb_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="feb_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="feb_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][2])?$upsideNN[$key][2]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][2])?$downsideNN[$key][2]:0;?></span></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['mar_fcast'])?$tempTalDataEntryNextYear2[$i-1]['mar_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['mar_fcas'])?$tempTalDataEntryNextYear2[$i-1]['mar_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['mar_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['mar_fcast'])&& date('m')-1 >= 3)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="mar_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="mar_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="mar_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][3])?$upsideNN[$key][3]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][3])?$downsideNN[$key][3]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['apr_fcast'])?$tempTalDataEntryNextYear2[$i-1]['apr_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['apr_fcas'])?$tempTalDataEntryNextYear2[$i-1]['apr_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['apr_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['apr_fcast'])&& date('m')-1 >= 4)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="apr_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="apr_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="apr_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][4])?$upsideNN[$key][4]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][4])?$downsideNN[$key][4]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['may_fcast'])?$tempTalDataEntryNextYear2[$i-1]['may_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['may_fcas'])?$tempTalDataEntryNextYear2[$i-1]['may_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['may_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['may_fcast'])&& date('m')-1 >= 5)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="may_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="may_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="may_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][5])?$upsideNN[$key][5]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][5])?$downsideNN[$key][5]:0;?></span></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['jun_fcast'])?$tempTalDataEntryNextYear2[$i-1]['jun_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['jun_fcas'])?$tempTalDataEntryNextYear2[$i-1]['jun_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['jun_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['jun_fcast'])&& date('m')-1 >= 6)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="jun_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="jun_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="jun_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][6])?$upsideNN[$key][6]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][6])?$downsideNN[$key][6]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['jul_fcast'])?$tempTalDataEntryNextYear2[$i-1]['jul_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['jul_fcas'])?$tempTalDataEntryNextYear2[$i-1]['jul_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['jul_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['jul_fcast'])&& date('m')-1 >= 7)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="jul_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="jul_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="jul_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][7])?$upsideNN[$key][7]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][7])?$downsideNN[$key][7]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['aug_fcast'])?$tempTalDataEntryNextYear2[$i-1]['aug_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['aug_fcas'])?$tempTalDataEntryNextYear2[$i-1]['aug_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['aug_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['aug_fcast'])&& date('m')-1 >= 8)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="aug_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="aug_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="aug_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][8])?$upsideNN[$key][8]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][8])?$downsideNN[$key][8]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['sep_fcast'])?$tempTalDataEntryNextYear2[$i-1]['sep_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['sep_fcas'])?$tempTalDataEntryNextYear2[$i-1]['sep_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['sep_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['sep_fcast'])&& date('m')-1 >= 9)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="sep_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="sep_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="sep_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][9])?$upsideNN[$key][9]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][9])?$downsideNN[$key][9]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['oct_fcast'])?$tempTalDataEntryNextYear2[$i-1]['oct_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['oct_fcas'])?$tempTalDataEntryNextYear2[$i-1]['oct_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['oct_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['oct_fcast'])&& date('m')-1 >= 10)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="oct_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="oct_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="oct_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][10])?$upsideNN[$key][10]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][10])?$downsideNN[$key][10]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['nov_fcast'])?$tempTalDataEntryNextYear2[$i-1]['nov_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['nov_fcas'])?$tempTalDataEntryNextYear2[$i-1]['nov_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['nov_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['nov_fcast'])&& date('m')-1 >= 11)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="nov_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="nov_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="nov_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][11])?$upsideNN[$key][11]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][11])?$downsideNN[$key][11]:0;?></span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['dec_fcast'])?$tempTalDataEntryNextYear2[$i-1]['dec_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['dec_fcas'])?$tempTalDataEntryNextYear2[$i-1]['dec_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear2[$i-1]['dec_fcast'])?$readonly:'';?> style="background:<?php echo (isset($tempTalDataEntryNextYear2[$i-1]['dec_fcast'])&& date('m')-1 >= 12)?'green;color: #fff;':'pink;';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <span class="dropdown-item" id="dec_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside">Up-Side</span>		
+                              <span class="dropdown-item" id="dec_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside">Down-Side</span>		
+                              <div class="dropdown-divider"></div>		
+                              <span class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" rel="dec_fcast_<?php echo $i;?>">Information</span>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside"><?php echo isset($upsideNN[$key][12])?$upsideNN[$key][12]:0;?></span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside"><?php echo isset($downsideNN[$key][12])?$downsideNN[$key][12]:0;?></span></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             &nbsp;
                         </div></td>
@@ -869,7 +1093,7 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                     <tr>
                         <td colspan="6"></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                          <level class="form-control"><?php echo strtoupper('focs');?></level>
+                          <lable class="form-control"><?php echo strtoupper('focs');?></lable>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             <input type="text" class="form-control" name="jan_focs_<?php echo $i;?>" id="jan_focsNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear2[$i-1]['jan_focs'])?$tempTalDataEntryNextYear2[$i-1]['jan_focs']:0;?>" maxlength="5">
@@ -965,43 +1189,73 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
         <!-- Notification DropDown -->
         <?php
             $fieldTALNameNextYear3 = '*';
+            $previousMonth = date('m')-1;
             $date3 = date("Y")+3;
-            $conditionTALNextYear3 = ' customerName='.$_SESSION['customerName'].' AND year='.$date3;
-            $tempTalDataEntryNextYear3 = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear3, $date3, $conditionTALNextYear3);
-            // print_r($tempTalDataEntryNextYear);
+            $conditionTALNextYear3 = ' customerWWID='.$_SESSION['customerName'].' AND year='.$dateVal[1];
+            $tempTalDataEntryNextYear3 = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear3, date("Y"), $conditionTALNextYear3);
+            $talTempData = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALName, date("Y"), $conditionTAL);
+            if (!empty($talDataFromActualN) && empty($talTempData)){		
+                $tempTalDataEntryNextYear3 = $talDataFromActualN;		
+                $style = 'background:green; color: #fff;';		
+                $readonly = 'readonly';		
+            } else {		
+                $tempTalDataEntryNextYear3 = $talTempData;		
+if(date('m')-1) {				
+                   $style = 'background:green; color: #fff;';				
+                } else {				
+                   $style = 'background:pink; color: #fff;';    				
+                }				
+                $readonly = 'readonly';		
+            }		
+            $targetSalesN = $specificMethod->fetchTargetSales('jnj_totalSalesTarget', 'fftarget', $dateVal[1]);		
+            $lastRollingForecastN = $specificMethod->fetchLastRollingForecast('jnj_totalrollingforecast', 'rollingForecast', $dateVal[1], $previousMonth);
         ?>
-        <div class="table-responsive">
+        <div class="table-responsive" style="height:550px;">
         <form id="entryGridFormTwoNextYear" name="entryGridFormTwoNextYear" method="post">
             <table class="table table-striped" id="nextTwoSampleTbl">
                 <thead>
                     <tr class="table-dark">
-                        <th colspan="22"></th>
+                        <th colspan="3" class="small">
+                        <div class="btn-group dropright">				
+                              <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="valueFromNFGSystem">Statical Forecast volume</button>				
+                              <div class="dropdown-menu" style="position:fixed;">				
+                                <a class="dropdown-item" href="#" >HGNC:1</a>				
+                                <a class="dropdown-item" href="#">HGNC:2</a>				
+                                <a class="dropdown-item" href="#">HGNC:3</a>				
+                                <a class="dropdown-item" href="#">HGNC:4</a>				
+                                <a class="dropdown-item" href="#">HGNC:5</a>				
+                                <a class="dropdown-item" href="#">HGNC:6</a>				
+                                <a class="dropdown-item" href="#">HGNC:7</a>				
+                                <a class="dropdown-item" href="#">HGNC:8</a>				
+                                <a class="dropdown-item" href="#">HGNC:9</a>  				
+                              </div>				
+                            </div>				
+                        </th>				
+                        <th colspan="17"><div id="errorMessage"></div></th>
                         <th colspan="2" style="text-align: center; color: black;"><div class="small"><strong>Auto Populated</strong></div></th>
                         <th colspan="4" style="text-align: center; color: black;"><div class="small"><strong>Calculated Field</strong></div></th>
-                        <th><div class="small col-12" style='width: 150px; color: black;'><strong>Only CVTL</strong></div></th>
+                        <th><div class="small col-8" style='width: 150px; color: black;'><strong>Only CVTL</strong></div></th>
                     </tr>
                     <tr class="table-primary">
-                        <th><div class="small col-4" style='width: 40px;'>&nbsp;</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Country</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Type</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Bus Selector</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Item(SKU)</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Brand</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Vaue_Category</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jan</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Feb</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Mar</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Apr</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>May</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jun</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jul</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Aug</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Sep</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Oct</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Nov</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Dec</div></th>
-                        <th><div class="small col-4" style='width: 50px;'>Action</div></th>
                         <th><div class="small col-4" style='width: 2px;'>&nbsp;</div></th>
+                        <th><div class="small col-12" style='width: 60px;'>Country</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Type</div></th>
+                        <th><div class="small col-12" style='width: 100px;'>Bus Selector</div></th>
+                        <th><div class="small col-12" style='width: 130px;'>Item(SKU)</div></th>
+                        <th><div class="small col-12" style='width: 170px;'>Brand</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Forecast/FOCs</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jan</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Feb</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Mar</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Apr</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>May</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jun</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jul</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Aug</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Sep</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Oct</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Nov</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Dec</div></th>
                         <th><div class="small col-4" style='width: 2px;'>&nbsp;</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Total Sales Target</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Last Rolling Forecast</div></th>
@@ -1014,11 +1268,13 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                 </thead>
                 <tbody>
                   <?php  
-                    for($i=1; $i<=$numberOfItteration; $i++) { 
+                  $i = 0;
+                  foreach($tempTalDataEntry as $key => $val) {		
+                    $i = $i + 1;
                   ?>
                     <tr>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="hidden" class="form-control" name="customerName_<?php echo $i;?>" id="customerNameNNN_<?php echo $i;?>" value="<?php echo $customerNameOne['customerName'];?>" readonly>
+                            <input type="hidden" class="form-control" name="customerName_<?php echo $i;?>" id="customerNameNNN_<?php echo $i;?>" value="<?php echo $_SESSION['customerName'];?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             <input type="text" class="form-control" name="country_<?php echo $i;?>" id="countryNNN_<?php echo $i;?>" value="<?php echo $country['countryCode'];?>" readonly>
@@ -1048,11 +1304,12 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
                             <?php if(!empty($tempTalDataEntryNextYear3[$i-1])) { ?>
-                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="itemNNN_<?php echo $i;?>" value="<?php echo $itemOne[$tempTalDataEntryNextYear3[$i-1]['itemId']]; ?>" readonly>
+                            <lable class="form-control"><?php echo $brandOne[$tempTalDataEntryNextYear3[$i-1]['brandId']];?></lable>
+                            <input type="hidden" class="form-control" name="brand_<?php echo $i;?>" id="brandNNN_<?php echo $i;?>" value="<?php echo $brandOne[$tempTalDataEntryNextYear3[$i-1]['brandId']];?> readonly>
                             <?php } else { ?>
-                            <select name="item_<?php echo $i;?>" id="itemNNN_<?php echo $i;?>" class="form-control form-control-inline">
-                                <option value='0'>Select Item</option>
-                                <?php foreach($itemOne as $key => $val) { ?>
+                            <select name="brand_<?php echo $i;?>" id="brandNNN_<?php echo $i;?>" class="form-control form-control-inline">
+                            <option value='0'>Select Brand</option>
+                            <?php foreach($brandOne as $key => $val) { ?>
                                     <option value="<?php echo $key;?>"><?php echo $val;?></option>
                                 <?php } ?>
                             </select>
@@ -1060,58 +1317,134 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
                             <?php if(!empty($tempTalDataEntryNextYear3[$i-1])) { ?>
-                            <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brandNNN_<?php echo $i;?>" value="<?php echo $brandOne[$tempTalDataEntryNextYear3[$i-1]['brandId']];?>" readonly>
+                                <lable class="form-control"><?php echo $brandOne[$tempTalDataEntryNextYear3[$i-1]['itemId']];?></lable>
+                            <input type="hidden" class="form-control" name="item_<?php echo $i;?>" id="itemNNN_<?php echo $i;?>" value="<?php $itemOne[$tempTalDataEntryNextYear3[$i-1]['itemId']]; ?>" readonly>
                             <?php } else { ?>
-                            <select name="brand_<?php echo $i;?>" id="brandNNN_<?php echo $i;?>" class="form-control form-control-inline">
-                                <option value='0'>Select Brand</option>
+                            <select name="item_<?php echo $i;?>" id="itemNNN_<?php echo $i;?>" class="form-control form-control-inline">
+                                <option value='0'>Select Item</option>
                             </select>
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                          <lavel class="form-control"><?php echo strtoupper('forecast');?></lavel>
+                          <lable class="form-control"><?php echo strtoupper('forecast');?></lable>
                         </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear3[$i-1]['jan_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['feb_fcast'])?$tempTalDataEntryNextYear3[$i-1]['feb_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['mar_fcast'])?$tempTalDataEntryNextYear3[$i-1]['mar_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['apr_fcast'])?$tempTalDataEntryNextYear3[$i-1]['apr_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['may_fcast'])?$tempTalDataEntryNextYear3[$i-1]['may_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jun_fcast'])?$tempTalDataEntryNextYear3[$i-1]['jun_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jul_fcast'])?$tempTalDataEntryNextYear3[$i-1]['jul_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['aug_fcast'])?$tempTalDataEntryNextYear3[$i-1]['aug_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['sep_fcast'])?$tempTalDataEntryNextYear3[$i-1]['sep_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['oct_fcast'])?$tempTalDataEntryNextYear3[$i-1]['oct_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['nov_fcast'])?$tempTalDataEntryNextYear3[$i-1]['nov_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['dec_fcast'])?$tempTalDataEntryNextYear3[$i-1]['dec_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <!--a href="#" class="form-control" name="Action" id="Action">Edit/Delete</a-->
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            &nbsp;
-                        </div></td>
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear3[$i-1]['jan_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['jan_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jan_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="jan_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="jan_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="jan_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['feb_fcas'])?$tempTalDataEntryNextYear3[$i-1]['feb_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['feb_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['feb_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="feb_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="feb_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="feb_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['mar_fcas'])?$tempTalDataEntryNextYear3[$i-1]['mar_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['mar_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['mar_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="mar_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="mar_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="mar_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['apr_fcas'])?$tempTalDataEntryNextYear3[$i-1]['apr_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['apr_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['apr_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="apr_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="apr_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="apr_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['may_fcas'])?$tempTalDataEntryNextYear3[$i-1]['may_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['may_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['may_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="may_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="may_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="may_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jun_fcas'])?$tempTalDataEntryNextYear3[$i-1]['jun_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['jun_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jun_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="jun_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="jun_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="jun_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jul_fcas'])?$tempTalDataEntryNextYear3[$i-1]['jul_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['jul_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jul_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="jul_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="jul_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="jul_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['aug_fcas'])?$tempTalDataEntryNextYear3[$i-1]['aug_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['aug_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['aug_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="aug_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="aug_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="aug_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['sep_fcas'])?$tempTalDataEntryNextYear3[$i-1]['sep_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['sep_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['sep_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="sep_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="sep_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="sep_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['oct_fcas'])?$tempTalDataEntryNextYear3[$i-1]['oct_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['oct_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['oct_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="oct_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="oct_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="oct_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['nov_fcas'])?$tempTalDataEntryNextYear3[$i-1]['nov_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['nov_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['nov_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="nov_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="nov_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="nov_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>		
+                        		
+                        <td><div class="input-group input-group-sm mt-2">                		
+                        <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['dec_fcas'])?$tempTalDataEntryNextYear3[$i-1]['dec_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear3[$i-1]['dec_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['dec_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>		
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">		
+                        <a class="dropdown-item" id="dec_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>				
+                              <a class="dropdown-item" id="dec_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>				
+                              <div class="dropdown-divider"></div>				
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="dec_fcast_<?php echo $i;?>">Information</a>				
+                            </div>				
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             &nbsp;
                         </div></td>
@@ -1140,7 +1473,7 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                     <tr>
                         <td colspan="6"></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                          <level class="form-control"><?php echo strtoupper('focs');?></level>
+                          <lable class="form-control"><?php echo strtoupper('focs');?></lable>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             <input type="text" class="form-control" name="jan_focs_<?php echo $i;?>" id="jan_focsNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jan_focs'])?$tempTalDataEntryNextYear3[$i-1]['jan_focs']:0;?>" maxlength="5">
@@ -1179,12 +1512,6 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             <input type="text" class="form-control" name="dec_focs_<?php echo $i;?>" id="dec_focsNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['dec_focs'])?$tempTalDataEntryNextYear3[$i-1]['dec_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                           <!--a href="#" class="form-control" name="Action" id="Action">Edit/Delete</a-->
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            &nbsp;
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
                             &nbsp;
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
@@ -1217,50 +1544,100 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
         </div>
     </div>
     <div class="tab-pane fade" id="threeNextYear">
-        <h4 class="mt-2"><?php echo date("Y")+4;?> Data</h4>
+    <div class="btn-group float-right">		
+            <a href="#" class="btn btn-secondary dropdown-toggle btn-sm active" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" >Notifications &nbsp;		
+                <i class="fa fa-envelope" style="color:white;" >&nbsp; 		
+                    <span class="badge badge-pill badge-danger">9</span>		
+                    <span class="sr-only">unread messages</span>		
+                </i>		
+            </a>		
+            <div class="dropdown-menu  dropdown-menu-right dropdown-menu-sm-right" style="width: 17px;">		
+                <div class="card-body" style="">		
+                    <h5 class="card-title small">CVTL's</h5>		
+                    <p class="card-text small">Your Forecast sheet is being rejected</p>		
+                    <a href="#" class="card-link small" data-toggle="modal" data-target="#myModal">See the Comments</a>		
+                </div>		
+                <div class="card-body">		
+                    <h5 class="card-title small">CVTL's</h5>		
+                    <p class="card-text small">Your Forecast sheet is being rejected</p>		
+                    <a href="#" class="card-link small" data-toggle="modal" data-target="#myModal">See the Comments</a>		
+                </div>		
+            </div>		
+        </div><br/><br/>
         <?php
-            $fieldTALNameNextYear3 = '*';
+            $fieldTALNameNextYear4 = '*';
             $date4 = date("Y")+4;
-            $conditionTALNextYear3 = ' customerName='.$_SESSION['customerName'].' AND year='.$date3;
-            $tempTalDataEntryNextYear3 = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear3, $date4, $conditionTALNextYear3);
+            $previousMonth = date('m')-1;
+            $conditionTALNextYear4 = ' customerWWID='.$_SESSION['customerName'].' AND year='.$dateVal[1];
+            $tempTalDataEntryNextYear4 = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALNameNextYear4, date("Y"), $conditionTALNextYear4);
             // print_r($tempTalDataEntryNextYear);
+            $talTempData = $specificMethod->fetchMultipleRecordsByDateTimeMain('jnj_temp_tal_dataentry', $fieldTALName, date("Y"), $conditionTAL);		
+            if (!empty($talDataFromActualN) && empty($talTempData)){				
+                $tempTalDataEntryNextYear4 = $talDataFromActualN;				
+                $style = 'background:green; color: #fff;';				
+                $readonly = 'readonly';				
+            } else {				
+                $tempTalDataEntryNextYear4 = $talTempData;				
+            if(date('m')-1) {						
+                   $style = 'background:green; color: #fff;';						
+                } else {						
+                   $style = 'background:pink; color: #fff;';    						
+                }						
+                $readonly = 'readonly';				
+            }				
+            $targetSalesN = $specificMethod->fetchTargetSales('jnj_totalSalesTarget', 'fftarget', $dateVal[1]);				
+            $lastRollingForecastN = $specificMethod->fetchLastRollingForecast('jnj_totalrollingforecast', 'rollingForecast', $dateVal[1], $previousMonth);
+
         ?>
-        <div class="table-responsive">
+        <div class="table-responsive" style="height:550px;">
         <form id="entryGridFormThreeNextYear" name="entryGridFormThreeNextYear" method="post">
             <table class="table table-striped" id="nextThreeSampleTbl">
                 <thead>
                     <tr class="table-dark">
-                        <th colspan="22"></th>
+                        <th colspan="3" class="small"><div class="btn-group dropright">						
+                              <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="valueFromNFGSystem">Statical Forecast volume</button>						
+                              <div class="dropdown-menu" style="position:fixed;">						
+                                <a class="dropdown-item" href="#" >HGNC:1</a>						
+                                <a class="dropdown-item" href="#">HGNC:2</a>						
+                                <a class="dropdown-item" href="#">HGNC:3</a>						
+                                <a class="dropdown-item" href="#">HGNC:4</a>						
+                                <a class="dropdown-item" href="#">HGNC:5</a>						
+                                <a class="dropdown-item" href="#">HGNC:6</a>						
+                                <a class="dropdown-item" href="#">HGNC:7</a>						
+                                <a class="dropdown-item" href="#">HGNC:8</a>						
+                                <a class="dropdown-item" href="#">HGNC:9</a>  						
+                              </div>						
+                            </div>						
+                        </th>						
+                        <th colspan="17"><div id="errorMessage"></div></th>
                         <th colspan="2" style="text-align: center; color: black;"><div class="small"><strong>Auto Populated</strong></div></th>
                         <th colspan="4" style="text-align: center; color: black;"><div class="small"><strong>Calculated Field</strong></div></th>
-                        <th><div class="small col-12" style='width: 150px; color: black;'><strong>Only CVTL</strong></div></th>
+                        <th><div class="small col-8" style='width: 150px; color: black;'><strong>Only CVTL</strong></div></th>
                     </tr>
                     <tr class="table-primary">
-                        <th><div class="small col-4" style='width: 40px;'>&nbsp;</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Country</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Type</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Bus Selector</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Item(SKU)</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Brand</div></th>
-                        <th><div class="small col-12" style='width: 100px;'>Vaue_Category</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jan</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Feb</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Mar</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Apr</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>May</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jun</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Jul</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Aug</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Sep</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Oct</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Nov</div></th>
-                        <th><div class="small col-12" style='width: 60px;'>Dec</div></th>
-                        <th><div class="small col-4" style='width: 50px;'>Action</div></th>
                         <th><div class="small col-4" style='width: 2px;'>&nbsp;</div></th>
+                        <th><div class="small col-12" style='width: 60px;'>Country</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Type</div></th>
+                        <th><div class="small col-12" style='width: 100px;'>Bus Selector</div></th>
+                        <th><div class="small col-12" style='width: 130px;'>Item(SKU)</div></th>
+                        <th><div class="small col-12" style='width: 170px;'>Brand</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Forecast/FOCs</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jan</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Feb</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Mar</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Apr</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>May</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jun</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Jul</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Aug</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Sep</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Oct</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Nov</div></th>
+                        <th><div class="small col-12" style='width: 80px;'>Dec</div></th>
                         <th><div class="small col-4" style='width: 2px;'>&nbsp;</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Total Sales Target</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Last Rolling Forecast</div></th>
-                        <th><div class="small col-12" style='width: 150px;'>Total Forecast (in Current year)</div></th>
+                        <th><div class="small col-12" style='width: 150px;'>Total Forecast (Next 4 year)</div></th>
                         <th><div class="small col-8" style='width: 80px;'>Variance</div></th>
                         <th><div class="small col-8" style='width: 80px;'>YTD</div></th>
                         <th><div class="small col-12" style='width: 100px;'>Year to go</div></th>
@@ -1268,7 +1645,10 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                     </tr>
                 </thead>
                 <tbody>
-                  <?php for($i=1; $i<=$numberOfItteration; $i++) {  ?>
+                  <?php $i = 0;		
+                  foreach($tempTalDataEntry as $key => $val) {				
+                    $i = $i + 1;
+                    ?>
                     <tr>
                         <td><div class="input-group input-group-sm mt-2">                
                             <input type="hidden" class="form-control" name="customerName_<?php echo $i;?>" id="customerNameNNNN_<?php echo $i;?>" value="<?php echo $customerNameOne['customerName'];?>" readonly>
@@ -1277,8 +1657,8 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             <input type="text" class="form-control" name="country_<?php echo $i;?>" id="countryNNNN_<?php echo $i;?>" value="<?php echo $country['countryCode'];?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
-                            <?php if(!empty($tempTalDataEntryNextYear3[$i-1])) { ?>
-                            <input type="text" class="form-control" name="type_<?php echo $i;?>" id="typeNNNN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear3[$i-1]['type'];?>" readonly>
+                            <?php if(!empty($tempTalDataEntryNextYear4[$i-1])) { ?>
+                            <input type="text" class="form-control" name="type_<?php echo $i;?>" id="typeNNNN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear4[$i-1]['type'];?>" readonly>
                             <?php } else { ?>
                             <select class="form-control form-control-inline" name="type_<?php echo $i;?>" id="typeNNNN_<?php echo $i;?>">
                                 <option value='0'>Select Type</option>
@@ -1289,8 +1669,8 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
-                            <?php if(!empty($tempTalDataEntryNextYear3[$i-1])) { ?>
-                             <input type="text" class="form-control" name="busSelector_<?php echo $i;?>" id="busSelectorNNNN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear3[$i-1]['busSelector'];?>" readonly>
+                            <?php if(!empty($tempTalDataEntryNextYear4[$i-1])) { ?>
+                             <input type="text" class="form-control" name="busSelector_<?php echo $i;?>" id="busSelectorNNNN_<?php echo $i;?>" value="<?php echo $tempTalDataEntryNextYear4[$i-1]['busSelector'];?>" readonly>
                             <?php } else { ?>
                             <select name="busSelector_<?php echo $i;?>" id="busSelectorNNNN_<?php echo $i;?>" class="form-control form-control-inline">
                                 <?php foreach($busSector as $val) { ?>
@@ -1300,8 +1680,19 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             <?php } ?>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">
-                            <?php if(!empty($tempTalDataEntryNextYear3[$i-1])) { ?>
-                            <input type="text" class="form-control" name="item_<?php echo $i;?>" id="itemNNNN_<?php echo $i;?>" value="<?php echo $itemOne[$tempTalDataEntryNextYear3[$i-1]['itemId']]; ?>" readonly>
+                            <?php if(!empty($tempTalDataEntryNextYear4[$i-1])) { ?>
+                            <lable class="form-control"><?php echo $brandOne[$tempTalDataEntryNextYear4[$i-1]['brandId']];?></lable>
+                            <input type="hidden" class="form-control" name="brand_<?php echo $i;?>" id="brandNNNN_<?php echo $i;?>" value="<?php echo $brandOne[$tempTalDataEntryNextYear4[$i-1]['brandId']];?>" readonly>
+                            <?php } else { ?>
+                            <select name="brand_<?php echo $i;?>" id="brandNNNN_<?php echo $i;?>" class="form-control form-control-inline">
+                                <option value='0'>Select Brand</option>
+                            </select>
+                            <?php } ?>
+                        </div></td>
+                        <td><div class="input-group input-group-sm mt-2">
+                            <?php if(!empty($tempTalDataEntryNextYear4[$i-1])) { ?>
+                                <lable class="form-control"><?php echo $brandOne[$tempTalDataEntryNextYear4[$i-1]['itemId']];?></lable>
+                            <input type="hidden" class="form-control" name="item_<?php echo $i;?>" id="itemNNNN_<?php echo $i;?>" value="<?php echo $itemOne[$tempTalDataEntryNextYear4[$i-1]['itemId']]; ?>" readonly>
                             <?php } else { ?>
                             <select name="item_<?php echo $i;?>" id="itemNNNN_<?php echo $i;?>" class="form-control form-control-inline">
                                 <option value='0'>Select Item</option>
@@ -1311,60 +1702,127 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                             </select>
                             <?php } ?>
                         </div></td>
-                        <td><div class="input-group input-group-sm mt-2">
-                            <?php if(!empty($tempTalDataEntryNextYear3[$i-1])) { ?>
-                            <input type="text" class="form-control" name="brand_<?php echo $i;?>" id="brandNNNN_<?php echo $i;?>" value="<?php echo $brandOne[$tempTalDataEntryNextYear3[$i-1]['brandId']];?>" readonly>
-                            <?php } else { ?>
-                            <select name="brand_<?php echo $i;?>" id="brandNNNN_<?php echo $i;?>" class="form-control form-control-inline">
-                                <option value='0'>Select Brand</option>
-                            </select>
-                            <?php } ?>
+                        
+                        <td><div class="input-group input-group-sm mt-2">                
+                          <lable class="form-control"><?php echo strtoupper('forecast');?></lable>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                          <lavel class="form-control"><?php echo strtoupper('forecast');?></lavel>
-                        </div></td>
+                        <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear4[$i-1]['jan_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['jan_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jan_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="jan_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="jan_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="jan_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jan_fcast_<?php echo $i;?>" id="jan_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jan_fcast'])?$tempTalDataEntryNextYear3[$i-1]['jan_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['feb_fcas'])?$tempTalDataEntryNextYear4[$i-1]['feb_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['feb_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['feb_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="feb_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="feb_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="feb_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="feb_fcast_<?php echo $i;?>" id="feb_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['feb_fcast'])?$tempTalDataEntryNextYear3[$i-1]['feb_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['mar_fcas'])?$tempTalDataEntryNextYear4[$i-1]['mar_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['mar_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['mar_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="mar_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="mar_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="mar_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="mar_fcast_<?php echo $i;?>" id="mar_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['mar_fcast'])?$tempTalDataEntryNextYear3[$i-1]['mar_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['apr_fcas'])?$tempTalDataEntryNextYear4[$i-1]['apr_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['apr_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['apr_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="apr_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="apr_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="apr_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="apr_fcast_<?php echo $i;?>" id="apr_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['apr_fcast'])?$tempTalDataEntryNextYear3[$i-1]['apr_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['may_fcas'])?$tempTalDataEntryNextYear4[$i-1]['may_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['may_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['may_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="may_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="may_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="may_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="may_fcast_<?php echo $i;?>" id="may_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['may_fcast'])?$tempTalDataEntryNextYear3[$i-1]['may_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jun_fcas'])?$tempTalDataEntryNextYear4[$i-1]['jun_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['jun_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jun_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="jun_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="jun_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="jun_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jun_fcast_<?php echo $i;?>" id="jun_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jun_fcast'])?$tempTalDataEntryNextYear3[$i-1]['jun_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jul_fcas'])?$tempTalDataEntryNextYear4[$i-1]['jul_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['jul_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jul_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="jul_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="jul_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="jul_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jul_fcast_<?php echo $i;?>" id="jul_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jul_fcast'])?$tempTalDataEntryNextYear3[$i-1]['jul_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['aug_fcas'])?$tempTalDataEntryNextYear4[$i-1]['aug_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['aug_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['aug_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="aug_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="aug_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="aug_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="aug_fcast_<?php echo $i;?>" id="aug_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['aug_fcast'])?$tempTalDataEntryNextYear3[$i-1]['aug_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['sep_fcas'])?$tempTalDataEntryNextYear4[$i-1]['sep_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['sep_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['sep_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="sep_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="sep_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="sep_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="sep_fcast_<?php echo $i;?>" id="sep_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['sep_fcast'])?$tempTalDataEntryNextYear3[$i-1]['sep_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['oct_fcas'])?$tempTalDataEntryNextYear4[$i-1]['oct_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['oct_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['oct_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="oct_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="oct_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="oct_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="oct_fcast_<?php echo $i;?>" id="oct_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['oct_fcast'])?$tempTalDataEntryNextYear3[$i-1]['oct_fcast']:0;?>" maxlength="5">
-                        </div></td>
+                        <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['nov_fcas'])?$tempTalDataEntryNextYear4[$i-1]['nov_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['nov_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['nov_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="nov_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="nov_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="nov_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
+                        
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="nov_fcast_<?php echo $i;?>" id="nov_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['nov_fcast'])?$tempTalDataEntryNextYear3[$i-1]['nov_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['dec_fcast'])?$tempTalDataEntryNextYear3[$i-1]['dec_fcast']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <!--a href="#" class="form-control" name="Action" id="Action">Edit/Delete</a-->
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            &nbsp;
-                        </div></td>
+                        <input type="text" class="form-control" name="dec_fcast_<?php echo $i;?>" id="dec_fcastNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['dec_fcas'])?$tempTalDataEntryNextYear4[$i-1]['dec_fcast']:0;?>" maxlength="8" <?php echo isset($tempTalDataEntryNextYear4[$i-1]['dec_fcast'])?$readonly:'';?> style="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['dec_fcast'])?$style:'';?>">&nbsp;<span class="nav-link dropdown-toggle" style="width:5px;height:5px;padding: 0rem 0rem;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="dec_upside_<?php echo $i;?>" data-toggle="modal" data-target="#upside" href="#">Up-Side</a>		
+                              <a class="dropdown-item" id="dec_downside_<?php echo $i;?>" data-toggle="modal" data-target="#downside" href="#">Down-Side</a>		
+                              <div class="dropdown-divider"></div>		
+                              <a class="dropdown-item" id="informationSide_<?php echo $i;?>" data-toggle="modal" data-target="#informationSide" href="#" rel="dec_fcast_<?php echo $i;?>">Information</a>		
+                            </div>		
+                        </div><span style="font-size:12px;font-weight:600;color:green;" title="Upside">12345</span> |&nbsp;<span style="font-size:12px;font-weight:600;color:red;" title="Downside">12345</span></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             &nbsp;
                         </div></td>
@@ -1393,73 +1851,67 @@ $dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
                     <tr>
                         <td colspan="6"></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                          <level class="form-control"><?php echo strtoupper('focs');?></level>
+                          <lable class="form-control"><?php echo strtoupper('focs');?></lable>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jan_focs_<?php echo $i;?>" id="jan_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jan_focs'])?$tempTalDataEntryNextYear3[$i-1]['jan_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="jan_focs_<?php echo $i;?>" id="jan_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jan_focs'])?$tempTalDataEntryNextYear4[$i-1]['jan_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="feb_focs_<?php echo $i;?>" id="feb_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['feb_focs'])?$tempTalDataEntryNextYear3[$i-1]['feb_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="feb_focs_<?php echo $i;?>" id="feb_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['feb_focs'])?$tempTalDataEntryNextYear4[$i-1]['feb_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="mar_focs_<?php echo $i;?>" id="mar_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['mar_focs'])?$tempTalDataEntryNextYear3[$i-1]['mar_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="mar_focs_<?php echo $i;?>" id="mar_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['mar_focs'])?$tempTalDataEntryNextYear4[$i-1]['mar_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="apr_focs_<?php echo $i;?>" id="apr_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['apr_focs'])?$tempTalDataEntryNextYear3[$i-1]['apr_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="apr_focs_<?php echo $i;?>" id="apr_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['apr_focs'])?$tempTalDataEntryNextYear4[$i-1]['apr_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="may_focs_<?php echo $i;?>" id="may_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['may_focs'])?$tempTalDataEntryNextYear3[$i-1]['may_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="may_focs_<?php echo $i;?>" id="may_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['may_focs'])?$tempTalDataEntryNextYear4[$i-1]['may_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jun_focs_<?php echo $i;?>" id="jun_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jun_focs'])?$tempTalDataEntryNextYear3[$i-1]['jun_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="jun_focs_<?php echo $i;?>" id="jun_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jun_focs'])?$tempTalDataEntryNextYear4[$i-1]['jun_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="jul_focs_<?php echo $i;?>" id="jul_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['jul_focs'])?$tempTalDataEntryNextYear3[$i-1]['jul_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="jul_focs_<?php echo $i;?>" id="jul_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['jul_focs'])?$tempTalDataEntryNextYear4[$i-1]['jul_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="aug_focs_<?php echo $i;?>" id="aug_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['aug_focs'])?$tempTalDataEntryNextYear3[$i-1]['aug_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="aug_focs_<?php echo $i;?>" id="aug_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['aug_focs'])?$tempTalDataEntryNextYear4[$i-1]['aug_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="sep_focs_<?php echo $i;?>" id="sep_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['sep_focs'])?$tempTalDataEntryNextYear3[$i-1]['sep_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="sep_focs_<?php echo $i;?>" id="sep_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['sep_focs'])?$tempTalDataEntryNextYear4[$i-1]['sep_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="oct_focs_<?php echo $i;?>" id="oct_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['oct_focs'])?$tempTalDataEntryNextYear3[$i-1]['oct_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="oct_focs_<?php echo $i;?>" id="oct_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['oct_focs'])?$tempTalDataEntryNextYear4[$i-1]['oct_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="nov_focs_<?php echo $i;?>" id="nov_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['nov_focs'])?$tempTalDataEntryNextYear3[$i-1]['nov_focs']:0;?>" maxlength="5">
+                            <input type="text" class="form-control" name="nov_focs_<?php echo $i;?>" id="nov_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['nov_focs'])?$tempTalDataEntryNextYear4[$i-1]['nov_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="dec_focs_<?php echo $i;?>" id="dec_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['dec_focs'])?$tempTalDataEntryNextYear3[$i-1]['dec_focs']:0;?>" maxlength="5">
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                           <!--a href="#" class="form-control" name="Action" id="Action">Edit/Delete</a-->
+                            <input type="text" class="form-control" name="dec_focs_<?php echo $i;?>" id="dec_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['dec_focs'])?$tempTalDataEntryNextYear4[$i-1]['dec_focs']:0;?>" maxlength="5">
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
                             &nbsp;
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            &nbsp;
+                            <input type="text" class="form-control" name="totalSalesTarget_focs_<?php echo $i;?>" id="totalSalesTarget_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['totalSalesTarget_focs'])?$tempTalDataEntryNextYear4[$i-1]['totalSalesTarget_focs']:0;?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="totalSalesTarget_focs_<?php echo $i;?>" id="totalSalesTarget_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['totalSalesTarget_focs'])?$tempTalDataEntryNextYear3[$i-1]['totalSalesTarget_focs']:0;?>" readonly>
+                            <input type="text" class="form-control" name="lastRollingForecast_focs_<?php echo $i;?>" id="lastRollingForecast_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['lastRollingForecast_focs'])?$tempTalDataEntryNextYear4[$i-1]['lastRollingForecast_focs']:0;?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="lastRollingForecast_focs_<?php echo $i;?>" id="lastRollingForecast_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['lastRollingForecast_focs'])?$tempTalDataEntryNextYear3[$i-1]['lastRollingForecast_focs']:0;?>" readonly>
+                            <input type="text" class="form-control" name="totalForecast_focs_<?php echo $i;?>" id="totalForecast_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['totalForecast_focs'])?$tempTalDataEntryNextYear4[$i-1]['totalForecast_focs']:0;?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="totalForecast_focs_<?php echo $i;?>" id="totalForecast_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['totalForecast_focs'])?$tempTalDataEntryNextYear3[$i-1]['totalForecast_focs']:0;?>" readonly>
+                            <input type="text" class="form-control" name="varient_focs_<?php echo $i;?>" id="varient_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['varient_focs'])?$tempTalDataEntryNextYear4[$i-1]['varient_focs']:0;?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="varient_focs_<?php echo $i;?>" id="varient_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['varient_focs'])?$tempTalDataEntryNextYear3[$i-1]['varient_focs']:0;?>" readonly>
+                            <input type="text" class="form-control" name="ytd_focs_<?php echo $i;?>" id="ytd_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['ytd_focs'])?$tempTalDataEntryNextYear4[$i-1]['ytd_focs']:0;?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="ytd_focs_<?php echo $i;?>" id="ytd_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['ytd_focs'])?$tempTalDataEntryNextYear3[$i-1]['ytd_focs']:0;?>" readonly>
+                            <input type="text" class="form-control" name="yearToGo_focs_<?php echo $i;?>" id="yearToGo_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['yearToGo_focs'])?$tempTalDataEntryNextYear4[$i-1]['yearToGo_focs']:0;?>" readonly>
                         </div></td>
                         <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="yearToGo_focs_<?php echo $i;?>" id="yearToGo_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['yearToGo_focs'])?$tempTalDataEntryNextYear3[$i-1]['yearToGo_focs']:0;?>" readonly>
-                        </div></td>
-                        <td><div class="input-group input-group-sm mt-2">                
-                            <input type="text" class="form-control" name="financialPlan_focs_<?php echo $i;?>" id="financialPlan_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear3[$i-1]['financialPlan_focs'])?$tempTalDataEntryNextYear3[$i-1]['financialPlan_focs']:0;?>" <?php echo $readonly;?>>
+                            <input type="text" class="form-control" name="financialPlan_focs_<?php echo $i;?>" id="financialPlan_focsNNNN_<?php echo $i;?>" value="<?php echo isset($tempTalDataEntryNextYear4[$i-1]['financialPlan_focs'])?$tempTalDataEntryNextYear4[$i-1]['financialPlan_focs']:0;?>" <?php echo $readonly;?>>
                         </div></td>
                     </tr>
                   <?php } ?>
