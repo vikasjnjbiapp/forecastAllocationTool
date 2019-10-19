@@ -1,0 +1,9 @@
+talId,customerWWID,countryId,type,busSelector,itemId,brandId,jan_fcast,feb_fcast,mar_fcast,apr_fcast,may_fcast,jun_fcast,jul_fcast,aug_fcast,sep_fcast,oct_fcast,nov_fcast,dec_fcast,jan_focs,feb_focs,mar_focs,apr_focs,may_focs,jun_focs,jul_focs,aug_focs,sep_focs,oct_focs,nov_focs,dec_focs,year,status,sapCode,createDate,ModifiedDate
+,59051,1,Institution    ,TND,2,1,299,,210,30,414,114,5,35,30,414,114,5,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,414434,,
+,59051,1,Institution    ,TND,3,3,17,813,220,546,217,96,110,1034,192,1634,-400,100,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,377568,,
+,59051,1,Institution    ,DPO,5,3,1800,240,120,170,1216,244,168,277,17,170,168,102,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,377567,,
+,59051,1,Institution    ,DPO,7,5,2510,250,250,555,0,150,600,924,2900,800,4455,1845,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,32230,,
+,54817,1,Institution    ,DPO,7,5,67,10,3,6,6,6,6,20,20,20,26,26,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,32230,,
+,54817,1,MOH,TND,2,1,6,20,20,20,26,26,67,10,3,6,6,6,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,414434,,
+,54817,1,Private,DPO,8,5,20,10,20,4,16,40,100,101,102,103,104,105,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,418606,,
+,54817,1,Private,DPO,9,6,6,30,30,4,500,500,6,30,30,4,500,500,0,,0,0,0,0,0,0,0,0,0,0,2019,Non Registered,418611,,

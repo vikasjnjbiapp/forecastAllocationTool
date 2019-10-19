@@ -1,0 +1,320 @@
+<?php
+  // print_r($_SESSION);
+$unit = ['CNS', 'ID', 'IMM', 'MB & RP', 'OH'];
+$busSector = ['DPO', 'TND'];
+$status = ['Not Registered', 'Registered'];
+$divested = ['No', 'Yes'];
+$specificMethod = new specificMethodFile();
+$country = $specificMethod->fetchCountryDetails('jnj_country', $_SESSION['countryName']);
+
+$fields = implode(',',['id','brandName']);
+$brandOne = $specificMethod->fetchBrandsIrrespectiveBrandId('jnj_brand', $fields);
+
+$tableName = ['jnj_item', 'jnj_registration'];
+$itemOne = $specificMethod->fetchItemsIrrespectiveCustomer($tableName, $_SESSION['customerName']);
+
+$dateVal = [date("Y"), date("Y")+1, date("Y")+2, date("Y")+3, date("Y")+4];
+?>
+<!--script src="js/jquery.js"> </script-->
+<script lang="javascript" src="javascript/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--script src="https://code.jquery.com/jquery-1.10.2.js"></script--> 
+
+    <script>
+      function myFunction() {
+        var x = document.getElementById("Dashboard");
+        if (x.style.display === "none") {
+        x.style.display = "block";
+        $('#first_page').hide();
+        $('#back_page').show();
+        }
+        }  
+        function newFunction() {
+        var x = document.getElementById("Dashboard");
+        if (x.style.display === "block") {
+        x.style.display = "none";
+        $('#first_page').show();
+        $('#back_page').hide();
+        }
+        }  
+     
+  
+updateList = function() {
+var input = document.getElementById('file');
+// var output = document.getElementById('fileList');
+  for (var i = 0; i < input.files.length; ++i) {
+    //  output.innerHTML += input.files.item(i).name ;
+    $("#textbox1").attr("placeholder", input.files.item(i).name);
+  }
+} 
+        $(document).ready(function(){          
+                  $("#file").change(function(evt){
+                    var selectedFile = evt.target.files[0];
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                      var data = event.target.result;
+                      var workbook = XLSX.read(data, {
+                          type: 'binary'
+                      });
+                      workbook.SheetNames.forEach(function(sheetName) {
+                        console.log(sheetName);
+                          var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                          console.log(XL_row_object);
+                          /*for(i=0;i<=800;i++) {
+                             // if(XL_row_object[i].Material!== undefined) {
+                                  console.log(XL_row_object[i].Material);
+                                  console.log(XL_row_object[i].SKU);
+                                  console.log(XL_row_object[i].RatevsUSD);
+                                  console.log(XL_row_object[i].Country)
+                              //}
+                          }*/
+
+                        })
+                    };
+                    reader.onerror = function(event) {
+                      console.error("File could not be read! Code " + event.target.error.code);
+                    };
+                 reader.readAsBinaryString(selectedFile);                    
+              });
+        });
+          
+        
+    </script>
+
+    <!-- Original Page  -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#Pricing">Pricing</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#currency">Currency Master table</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#distrubutor">Distributor Markup</a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div id="Pricing" class="container tab-pane active"><br>
+    <div class="container-fluid" id="first_page" style="padding-top: 100px;">
+      <div class="row">
+        <div class="col-sm-6" >
+            <div class="input-group mb-3">
+             <button class= "btn btn-secondary" id="submitbutton" type="button">Upload the File</button>
+            </div>
+        </div>
+        <div class="col-sm-6">
+        <button type="button" class="btn btn-secondary" onclick="myFunction()" >Click to View the Dashboard</button>
+        </div>      
+      </div>
+    </div>
+    </div>
+    <div id="currency" class="tab-pane fade" style ="padding-left:30px;width:30%"><br>
+      <table class="table table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th style="text-align:center">Currency</th>
+            <th style="text-align:center">Rate vs. USD</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-secondary" style="text-align:center">USD</td>
+            <td class="table-secondary" style="text-align:center"></td>
+          </tr>
+          <tr>
+            <td class="table-secondary" style="text-align:center">EUR</td>
+            <td class="table-secondary" style="text-align:center"></td>
+          </tr>
+          <tr>
+            <td class="table-secondary"style="text-align:center">DZD</td>
+            <td class="table-secondary"style="text-align:center"></td>
+          </tr>
+          <tr>
+            <td class="table-secondary"style="text-align:center">EGP</td>
+            <td class="table-secondary"style="text-align:center"></td>
+          </tr>
+          <tr>
+            <td class="table-secondary"style="text-align:center">CHF</td>
+            <td class="table-secondary"style="text-align:center"></td>
+          </tr>
+          <tr>
+            <td class="table-secondary" style="text-align:center">SAR</td>
+            <td class="table-secondary" style="text-align:center"></td>
+          </tr>
+        </tbody>
+      </table>
+    
+  </div>
+  <div id="distrubutor" class="tab-pane fade" style ="padding-left:30px;width:50%"><br>
+      <table class="table table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th style="text-align:center">Country</th>
+            <th style="text-align:center">Distrubutor name</th>
+            <th style="text-align:center">Janssen</th>
+            <th style="text-align:center">PAH</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="table-secondary" style="text-align:center">AE</td>
+            <td class="table-secondary" style="text-align:center">Distr 1</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+          <tr>
+            <td class="table-secondary" style="text-align:center">AE</td>
+            <td class="table-secondary" style="text-align:center">Distr 2</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+          <tr>
+            <td class="table-secondary"style="text-align:center">BH</td>
+            <td class="table-secondary"style="text-align:center">Distr 3</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+          <tr>
+            <td class="table-secondary"style="text-align:center">BH</td>
+            <td class="table-secondary"style="text-align:center">Distr 4</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+          <tr>
+            <td class="table-secondary"style="text-align:center">OM</td>
+            <td class="table-secondary"style="text-align:center">Distr 5</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+          <tr>
+            <td class="table-secondary" style="text-align:center">KW</td>
+            <td class="table-secondary" style="text-align:center">Distr 6</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+          <tr>
+            <td class="table-secondary" style="text-align:center">QA</td>
+            <td class="table-secondary" style="text-align:center">Distr 7</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+          <tr>
+            <td class="table-secondary" style="text-align:center">SA</td>
+            <td class="table-secondary" style="text-align:center">Distr 8</td>
+            <td class="table-secondary" style="text-align:center">10.00%</td>
+            <td class="table-secondary" style="text-align:center">0.00%</td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  </div>
+
+<span id="back_page" style ="display:none;margin-left: 30px;">
+<button type="button" class="btn btn-outline-secondary" onclick="newFunction()"><i class="fa fa-mail-reply" style="font-size:18px"></i> Upload Page</button>
+</span>
+<br>
+<div id="Dashboard" style="padding-left:30px; display:none;margin-top: 20px;">
+  <div class="table-responsive" style="height:550px;">
+    <table class="table table-striped" style="font-family: calibri;">
+      <thead class="table table-secondary">
+       <tr >
+            <th style="text-align:center" >Material</th>
+            <th style="text-align:center">SKU</th>
+            <th style="text-align:center">Country Code</th>
+            <th style="text-align:center">Curr</th>
+            <th style="text-align:center"colspan="12">2020 CIF</th>
+            <th style="text-align:center"colspan="12">2020 TENDER PRICES</th>
+            <th style="text-align:center"colspan="3">Private Discounts</th>
+          </tr>
+          <tr class="table-primary">
+            <th class="small col-8" style="text-align:center"></th>
+            <th class="small col-8" style="text-align:center"></th>
+            <th class="small col-8" style="text-align:center"></th>
+            <th class="small col-8" style="text-align:center"></th>
+            <th class="small col-8" style="border-left: 1px solid #dee2e6;">Jan</th>
+            <th class="small col-8">Feb</th>
+            <th class="small col-8">Mar</th>
+            <th class="small col-8">Apr</th>
+            <th class="small col-8">May</th>
+            <th class="small col-8">Jun</th>
+            <th class="small col-8">Jul</th>
+            <th class="small col-8">Aug</th>
+            <th class="small col-8">Sep</th>
+            <th class="small col-8">Oct</th>
+            <th class="small col-8">Nov</th>
+            <th class="small col-8">Dec</th>
+            <th class="small col-8" style="border-left: 1px solid #dee2e6;">Jan</th>
+            <th class="small col-8">Feb</th>
+            <th class="small col-8">Mar</th>
+            <th class="small col-8">Apr</th>
+            <th class="small col-8">May</th>
+            <th class="small col-8">Jun</th>
+            <th class="small col-8">Jul</th>
+            <th class="small col-8">Aug</th>
+            <th class="small col-8">Sep</th>
+            <th class="small col-8">Oct</th>
+            <th class="small col-8">Nov</th>
+            <th class="small col-8" style="border-right: 1px solid #dee2e6;">Dec</th>
+            <th class="small col-8">Discounts</th>
+            <th class="small col-8">"FOCs"</th>
+            <th class="small col-8">Total Discounts</th>
+          </tr>
+      </thead>
+      <tbody>
+      <?php 
+         $pricingDataEntry = $specificMethod->fetchPricingDataEntry('jnj_pricing_dataentry', $_SESSION['customerName'], $dateVal[0]);
+          foreach($pricingDataEntry as $key => $val) {
+       ?>
+        <tr>
+          <td><?php echo $val['material'];?></td>
+          <td><?php echo $val['SKU'];?></td>
+          <td><?php echo $val['countryCode'];?></td>
+          <td><?php echo $val['currency'];?></td>
+          <td><?php echo $val['cif_jan'];?></td>
+          <td><?php echo $val['cif_feb'];?></td>
+          <td><?php echo $val['cif_mar'];?></td>
+          <td><?php echo $val['cif_apr'];?></td>
+          <td><?php echo $val['cif_may'];?></td>
+          <td><?php echo $val['cif_jun'];?></td>
+          <td><?php echo $val['cif_jul'];?></td>
+          <td><?php echo $val['cif_aug'];?></td>
+          <td><?php echo $val['cif_sep'];?></td>
+          <td><?php echo $val['cif_oct'];?></td>
+          <td><?php echo $val['cif_nov'];?></td>
+          <td><?php echo $val['cif_dec'];?></td>
+          <td><?php echo $val['tnd_jan'];?></td>
+          <td><?php echo $val['tnd_feb'];?></td>
+          <td><?php echo $val['tnd_mar'];?></td>
+          <td><?php echo $val['tnd_apr'];?></td>
+          <td><?php echo $val['tnd_may'];?></td>
+          <td><?php echo $val['tnd_jun'];?></td>
+          <td><?php echo $val['tnd_jul'];?></td>
+          <td><?php echo $val['tnd_aug'];?></td>
+          <td><?php echo $val['tnd_sep'];?></td>
+          <td><?php echo $val['tnd_oct'];?></td>
+          <td><?php echo $val['tnd_nov'];?></td>
+          <td><?php echo $val['tnd_dec'];?></td>
+          <td><?php echo $val['discounts'];?></td>
+          <td><?php echo $val['focs'];?></td>
+          <td><?php echo $val['totalDiscount'];?></td>
+
+
+        </tr>
+      <?php } ?>
+      </tbody>
+    
+    </table>
+
+  </div>
+</div>
+<script>
+$('#submitbutton').click(function(){
+   $.post('router.php', {page:'importPricingDataFile'}, function(data){
+      console.log(data); 
+   });
+})
+</script>
+
+

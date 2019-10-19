@@ -1,0 +1,2 @@
+id,customerWWID,countryId,type,busSelector,category,itemId,brandId,unit,jan_fcats,feb_fcats,mar_fcats,apr_fcats,may_fcats,jun_fcats,jul_fcats,aug_fcats,sep_fcats,oct_fcats,nov_fcats,dec_fcats,sales,unitPrice,year,status,sapCode,divested,createdDate,modifiedDate
+1,54806,5,Private ???,DPO,Hosp.,2,1,MB & RP,0,10,0,1,14,4,70,105,0,0,0,0,0,512,2019,0,418612,0,0000-00-00 00:00:00,0000-00-00

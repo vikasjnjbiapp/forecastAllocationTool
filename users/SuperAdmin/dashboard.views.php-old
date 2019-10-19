@@ -1,0 +1,50 @@
+<?php
+print_r($_SESSION);
+?>
+<!-- Display the chart and report -->
+<ul class="nav nav-tabs" id="myTab">
+    <li class="nav-item">
+        <a href="#chart" class="nav-link" data-toggle="tab" id="year_19">Year - <?php echo date("Y");?></a>
+    </li>
+    <li class="nav-item">
+        <a href="#currentYear" class="nav-link" data-toggle="tab" id="year_19">Year - <?php echo date("Y")+1;?></a>
+    </li>
+    <li class="nav-item">
+        <a href="#previousYear" class="nav-link" data-toggle="tab" id="year_18">Year - <?php echo date("Y")+2;?></a>
+    </li>
+    <li class="nav-item">
+        <a href="#onePreviousYear" class="nav-link" data-toggle="tab" id="year_17">Year - <?php echo date("Y")+3;?></a>
+    </li>
+    <li class="nav-item">
+        <a href="#onePreviousYear" class="nav-link" data-toggle="tab" id="year_17">Year - <?php echo date("Y")+4;?></a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade row" id="chart">
+        <h4 class="mt-2">Year - <?php echo date("Y");?></h4>
+    </div>
+    <div class="tab-pane fade" id="currentYear">
+        <h4 class="mt-2"><?php echo date("Y");?> Data</h4>
+        <div class="col-sm-6 float-left">
+          <?php if(intval($customerName) === 1) { ?>
+            <a href="#" id="downloadXlsxFile">Download consolidated report</a>
+          <?php } ?>
+        </div><br/>
+    </div>
+    <div class="tab-pane fade" id="previousYear">
+        <h4 class="mt-2"><?php echo date("Y")-1;?> Data</h4>
+    </div>
+    <div class="tab-pane fade" id="onePreviousYear">
+        <h4 class="mt-2"><?php echo date("Y")-2;?> Data</h4>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){ 
+        $("#myTab a:first").tab('show'); // show last tab on page load
+        $('#mychartOne').hide();
+        $('[data-toggle="tooltip"]').tooltip({
+            title: "Searcch by customer number or country name or item. <br/> You can also use three criteria togather using colum saparator.",
+            html: true
+        });
+    });
+</script>

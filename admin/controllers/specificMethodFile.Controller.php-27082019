@@ -1,0 +1,58 @@
+<?php
+/*
+specific functions
+*/
+
+class specificMethodFile extends commonMethodFile {
+   public function fetchCountryDetails($tableName, $countryId) {
+     $sql = " SELECT countryCode FROM ".$tableName." WHERE id=".$countryId;
+     $query = mysqli_query(parent::dbConnection(), $sql);
+     $rs = mysqli_fetch_array($query, MYSQLI_ASSOC);
+     return $rs;
+   }
+   public function fetchItemDetails($tableName, $fieldName, $condition) {
+       return parent::fetchMultipleRecords($tableName, $fieldName, $condition);
+   }
+   public function fetchUserList($tableName, $fieldName, $condition) {
+       return parent::fetchMultipleRecords($tableName, $fieldName, $condition);
+   }
+   public function fetchTotalSales($tableName, $fieldName, $condition) {
+       return parent::fetchMultipleRecords($tableName, $fieldName, $condition);
+   }
+   public function fetchItemsIrrespectiveCustomer($tableArray, $condtions) {
+     $sqlAssignId = " SELECT assignItems FROM ".$tableArray[1]." WHERE customerName=".$condtions;
+     $queryAssignId = mysqli_query(parent::dbConnection(), $sqlAssignId);
+     $rsAssignId = mysqli_fetch_array($queryAssignId, MYSQLI_ASSOC);
+     if(!empty($rsAssignId['assignItems'])) {
+         $sql = " SELECT id, itemName, brandId from ".$tableArray[0]." WHERE id in ( ".$rsAssignId['assignItems']." )";
+         $query = mysqli_query(parent::dbConnection(), $sql);
+         $tempArrName = $tempArrId = [];
+         $tempArr = [];
+           while($rs = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+              array_push($tempArrId, $rs['id']);
+              array_push($tempArrName, $rs['itemName']);
+           }
+         return array_combine($tempArrId, $tempArrName);
+     }
+   }
+   public function fetchBrandsIrrespectiveBrandId($tableName, $fieldName) {
+      $result = parent::fetchTableValue($tableName, $fieldName);
+      $tempArrId = [];
+      $tempArrBrandName = [];  
+      foreach($result as $val) {
+         array_push($tempArrId, $val['id']);
+         array_push($tempArrBrandName, $val['brandName']);  
+      }
+     return array_combine($tempArrId, $tempArrBrandName);
+   }
+   public function fetchItemsIrrespectiveCVTLCustomer($tableName, $fieldName) {
+     $result = parent::fetchTableValue($tableName, $fieldName);
+      $tempArrId = [];
+      $tempArrBrandName = [];  
+      foreach($result as $val) {
+         array_push($tempArrId, $val['id']);
+         array_push($tempArrBrandName, $val['itemName']);  
+      }
+     return array_combine($tempArrId, $tempArrBrandName);
+   }
+}// End class
