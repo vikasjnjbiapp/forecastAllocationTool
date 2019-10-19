@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 05, 2019 at 06:14 PM
+-- Generation Time: Oct 13, 2019 at 09:23 PM
 -- Server version: 10.1.8-MariaDB
 -- PHP Version: 5.6.14
 
@@ -78,7 +78,7 @@ INSERT INTO `jnj_actualsalesvalue` (`id`, `customerWWID`, `countryId`, `type`, `
 (13, 59051, 1, 'Institution', 'TND', 'Other Institution', 3, 2, 'MB & RP', 17, 360, 192, 96, 200, 96, 542, 152, NULL, NULL, NULL, NULL, 360, 24, 2019, 0, 377568, 0, '0000-00-00 00:00:00', '0000-00-00'),
 (14, 59051, 1, 'Institution', 'DPO', 'Other Institution', 5, 2, 'MB & RP', 800, 240, 120, 0, 168, 0, 300, 155, NULL, NULL, NULL, NULL, 800, 33, 2019, 0, 377567, 0, '0000-00-00 00:00:00', '0000-00-00'),
 (15, 59051, 1, 'Institution', 'DPO', 'Other Institution', 7, 4, 'MB & RP', 900, 0, 250, 1000, 600, 4000, 690, 8000, NULL, NULL, NULL, NULL, 4000, 3, 2019, 0, 32230, 0, '0000-00-00 00:00:00', '0000-00-00'),
-(16, 54817, 1, 'MOH', 'TND', 'Ministry Of Health', 2, 1, 'MB & RP', 150, 100, 70, 15360, 60, 25, 25, 12, NULL, NULL, NULL, NULL, 1000, 3, 2019, 0, 418610, 0, '0000-00-00 00:00:00', '0000-00-00'),
+(16, 54817, 1, 'MOH', 'TND', 'Ministry Of Health', 2, 2, 'MB & RP', 150, 100, 70, 15360, 60, 25, 25, 12, NULL, NULL, NULL, NULL, 1000, 3, 2019, 0, 418610, 0, '0000-00-00 00:00:00', '0000-00-00'),
 (17, 54817, 1, 'Institution', 'DPO', 'Other Institution', 7, 4, 'MB & RP', 100, 20, 80, 25, 60, 10, 25, 90, NULL, NULL, NULL, NULL, 0, 3, 2019, 0, 418610, 0, '0000-00-00 00:00:00', '0000-00-00'),
 (18, 54824, 1, 'MOH', 'TND', 'Ministry Of Health', 51, 19, 'CNS', 0, 0, 574448, 0, 0, 0, 900, 1000, NULL, NULL, NULL, NULL, 892, 644, 2019, 0, 418657, 0, '0000-00-00 00:00:00', '0000-00-00'),
 (19, 54824, 1, 'Private', 'DPO', 'Hosp.', 54, 20, 'MB & RP', 0, 0, 990, 495, 297, 495, 200, 800, NULL, NULL, NULL, NULL, 1350, 50, 2019, 0, 414907, 0, '0000-00-00 00:00:00', '0000-00-00'),
@@ -644,7 +644,11 @@ INSERT INTO `jnj_totalrollingforecast` (`id`, `customerWWID`, `itemId`, `month`,
 (29, 54824, 60, 9, 2019, 1455, 0, '2019-09-26 01:15:16', '2019-09-26'),
 (30, 54824, 55, 9, 2019, 5187, 0, '2019-09-26 01:15:16', '2019-09-26'),
 (31, 54824, 54, 9, 2019, 3277, 0, '2019-09-26 01:15:16', '2019-09-26'),
-(32, 54824, 51, 9, 2019, 576348, 0, '2019-09-26 01:15:16', '2019-09-26');
+(32, 54824, 51, 9, 2019, 576348, 0, '2019-09-26 01:15:16', '2019-09-26'),
+(33, 54817, 2, 10, 2019, 15397, 0, '2019-10-06 08:42:29', '2019-10-06'),
+(34, 54817, 7, 10, 2019, 410, 0, '2019-10-06 08:42:29', '2019-10-06'),
+(35, 54817, 8, 10, 2019, 158, 0, '2019-10-06 08:42:29', '2019-10-06'),
+(36, 54817, 9, 10, 2019, 1504, 0, '2019-10-06 08:42:29', '2019-10-06');
 
 -- --------------------------------------------------------
 
@@ -910,7 +914,7 @@ ALTER TABLE `jnj_temp_tal_dataentry`
 -- AUTO_INCREMENT for table `jnj_totalrollingforecast`
 --
 ALTER TABLE `jnj_totalrollingforecast`
-  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 --
 -- AUTO_INCREMENT for table `jnj_totalrollingforecast_cvt`
 --
